@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'huangxin'
 
-import time
+import time, MySQLdb
 
 proxies = {}
 
@@ -34,6 +34,13 @@ class _DbWrapper():
                 pass
             self.connection=self.db.connect(*argv,**kwargv)
         self.connected=time.time()
+        #add reconnection
+        try:
+            self.connection.ping()
+        except MySQLdb.Error:
+            self.connection = self.db.connect(*argv,**kwargv)
+
+        # print id(self.connection)
         return _ConnectionWrapper(self.connection)
 
 def manage(module, keepalive=7*3600):
